@@ -24,6 +24,32 @@ export default function Home() {
       }
   }
 
+  const checkIfWalletIsConnected = async() => {
+      try {
+          const { ethereum } = window
+
+          if(ethereum) {
+
+              const accounts = await ethereum.request({
+                  method: 'eth_accounts'
+              })
+
+              if(accounts.length > 0) {
+                  setAccount(accounts[0])
+              }
+
+          } else {
+              console.log('download metamask')
+          }
+      } catch(err) {
+          console.log(err)
+      }
+  }
+
+  useEffect(() => {
+      checkIfWalletIsConnected()
+  }, [])
+
   const renderContainer = () => (
       <div className={styles.renderContainer}>
           <p>Connected Wallet: {account}</p>
