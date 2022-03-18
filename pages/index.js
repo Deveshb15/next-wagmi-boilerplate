@@ -7,6 +7,9 @@ export default function Home() {
 
   const [account, setAccount] = useState(null)
 
+  const CONTRACT_ADDRESS = useRef("")
+  const ABI = useRef("")
+
   const connectWallet = async() => {
       try {
           const { ethereum } = window
@@ -50,9 +53,29 @@ export default function Home() {
       checkIfWalletIsConnected()
   }, [])
 
+  const checkContract = async(e) => {
+    e.preventDefault()
+
+    let contract_address = CONTRACT_ADDRESS.current.value
+    let abi = ABI.current.value
+    abi = JSON.parse(abi)
+
+    console.log(contract_address)
+    console.log(abi)
+  }
+
   const renderContainer = () => (
       <div className={styles.renderContainer}>
           <p>Connected Wallet: {account}</p>
+          <form onSubmit={(e) => checkContract(e)}>
+              <div>
+                  <label htmlFor="address">CONTRACT_ADDRESS: </label>
+                  <input ref={CONTRACT_ADDRESS} type="text" id="address" />
+              </div>
+              <label htmlFor="abi">ABI:</label>
+              <textarea ref={ABI} id="abi" />
+              <button className={styles.button} type="submit">Get contract</button>
+          </form>
       </div>
   )
 
