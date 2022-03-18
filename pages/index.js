@@ -54,14 +54,22 @@ export default function Home() {
   }, [])
 
   const checkContract = async(e) => {
-    e.preventDefault()
+      try {
+          e.preventDefault()
 
-    let contract_address = CONTRACT_ADDRESS.current.value
-    let abi = ABI.current.value
-    abi = JSON.parse(abi)
+          let contract_address = CONTRACT_ADDRESS.current.value
+          let abi = ABI.current.value
+          abi = JSON.parse(abi)
+          // console.log(contract_address)
+          // console.log(abi)
+          const provider = await ethers.getDefaultProvider()
+          const contract = new ethers.Contract(contract_address, abi, provider)
 
-    console.log(contract_address)
-    console.log(abi)
+          console.log(contract)
+
+      } catch(err) { 
+          console.log(err)
+      }
   }
 
   const renderContainer = () => (
@@ -72,8 +80,10 @@ export default function Home() {
                   <label htmlFor="address">CONTRACT_ADDRESS: </label>
                   <input ref={CONTRACT_ADDRESS} type="text" id="address" />
               </div>
-              <label htmlFor="abi">ABI:</label>
-              <textarea ref={ABI} id="abi" />
+              <div style={{ margin: '12px 0px', display: 'flex', alignItems: 'center' }}>
+                <label htmlFor="abi">ABI:</label>
+                <textarea ref={ABI} id="abi" />
+              </div>
               <button className={styles.button} type="submit">Get contract</button>
           </form>
       </div>
