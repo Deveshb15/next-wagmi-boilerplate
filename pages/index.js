@@ -1,117 +1,114 @@
-import React, { useState, useEffect, useRef } from 'react'
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-import { ethers } from 'ethers'
+import React, { useState, useEffect, useRef } from "react";
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import { ethers } from "ethers";
 
 export default function Home() {
+	const [account, setAccount] = useState(null);
 
-  const [account, setAccount] = useState(null)
+	const CONTRACT_ADDRESS = useRef("");
+	const ABI = useRef("");
 
-  const CONTRACT_ADDRESS = useRef("")
-  const ABI = useRef("")
+	const connectWallet = async () => {
+		try {
+			const { ethereum } = window;
+			if (ethereum) {
+				const accounts = await ethereum.request({
+					method: "eth_requestAccounts",
+				});
+				console.log(accounts);
+				setAccount(accounts[0]);
+			} else {
+				alert("Download metamask first");
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
-  const connectWallet = async() => {
-      try {
-          const { ethereum } = window
-          if(ethereum) {
-              const accounts = await ethereum.request({
-                  method: 'eth_requestAccounts'
-              })
-              console.log(accounts)
-              setAccount(accounts[0])
-          } else {
-              alert('Download metamask first')
-          }
-      } catch(err) {
-          console.log(err)
-      }
-  }
+	const checkIfWalletIsConnected = async () => {
+		try {
+			const { ethereum } = window;
 
-  const checkIfWalletIsConnected = async() => {
-      try {
-          const { ethereum } = window
+			if (ethereum) {
+				const accounts = await ethereum.request({
+					method: "eth_accounts",
+				});
 
-          if(ethereum) {
+				if (accounts.length > 0) {
+					setAccount(accounts[0]);
+				}
+			} else {
+				console.log("download metamask");
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
-              const accounts = await ethereum.request({
-                  method: 'eth_accounts'
-              })
+	useEffect(() => {
+		checkIfWalletIsConnected();
+	}, []);
 
-              if(accounts.length > 0) {
-                  setAccount(accounts[0])
-              }
+	const checkContract = async (e) => {
+		try {
+			e.preventDefault();
 
-          } else {
-              console.log('download metamask')
-          }
-      } catch(err) {
-          console.log(err)
-      }
-  }
+			let contract_address = CONTRACT_ADDRESS.current.value;
+			let abi = ABI.current.value;
+			abi = JSON.parse(abi);
+			// console.log(contract_address)
+			// console.log(abi)
+			const provider = new ethers.providers.Web3Provider(ethereum)
+            const signer = provider.getSigner()
+			const contract = new ethers.Contract(contract_address, abi, signer);
+			console.log(contract);
+			console.log(contract.address);
+            
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
-  useEffect(() => {
-      checkIfWalletIsConnected()
-  }, [])
+	const renderContainer = () => (
+		<div className={styles.renderContainer}>
+			<p>Connected Wallet: {account}</p>
+			<form onSubmit={(e) => checkContract(e)}>
+				<div>
+					<label htmlFor="address">CONTRACT_ADDRESS: </label>
+					<input ref={CONTRACT_ADDRESS} type="text" id="address" />
+				</div>
+				<div
+					style={{ margin: "12px 0px", display: "flex", alignItems: "center" }}
+				>
+					<label htmlFor="abi">ABI:</label>
+					<textarea ref={ABI} id="abi" />
+				</div>
+				<button className={styles.button} type="submit">
+					Get contract
+				</button>
+			</form>
+		</div>
+	);
 
-  const checkContract = async(e) => {
-      try {
-          e.preventDefault()
-
-          let contract_address = CONTRACT_ADDRESS.current.value
-          let abi = ABI.current.value
-          abi = JSON.parse(abi)
-          // console.log(contract_address)
-          // console.log(abi)
-          const provider = await ethers.getDefaultProvider()
-          const contract = new ethers.Contract(contract_address, abi, provider)
-
-          console.log(contract)
-
-      } catch(err) { 
-          console.log(err)
-      }
-  }
-
-  const renderContainer = () => (
-      <div className={styles.renderContainer}>
-          <p>Connected Wallet: {account}</p>
-          <form onSubmit={(e) => checkContract(e)}>
-              <div>
-                  <label htmlFor="address">CONTRACT_ADDRESS: </label>
-                  <input ref={CONTRACT_ADDRESS} type="text" id="address" />
-              </div>
-              <div style={{ margin: '12px 0px', display: 'flex', alignItems: 'center' }}>
-                <label htmlFor="abi">ABI:</label>
-                <textarea ref={ABI} id="abi" />
-              </div>
-              <button className={styles.button} type="submit">Get contract</button>
-          </form>
-      </div>
-  )
-
-  return (
-    <div className={styles.container}>
+	return (
+		<div className={styles.container}>
 			<Head>
 				<title>Boilerplate for contract interaction</title>
-				<meta
-					name="description"
-					content="Generated by create next app"
-				/>
+				<meta name="description" content="Generated by create next app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
 			<main className={styles.main}>
-				<h1 className={styles.title}>
-					Interact with your contract!
-				</h1>
-        {
-            account ? (
-                renderContainer()
-            ) : (
-                <button onClick={connectWallet} className={styles.button}>Connect</button>
-            )
-        }
+				<h1 className={styles.title}>Interact with your contract!</h1>
+				{account ? (
+					renderContainer()
+				) : (
+					<button onClick={connectWallet} className={styles.button}>
+						Connect
+					</button>
+				)}
 			</main>
 		</div>
-  )
+	);
 }
