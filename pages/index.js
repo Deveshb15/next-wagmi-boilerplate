@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import { useAccount, useConnect } from 'wagmi'
+import { useAccount, useBalance,useConnect } from 'wagmi'
 
 
 export const useIsMounted = () => {
@@ -16,50 +16,9 @@ export default function Home() {
 		fetchEns: true,
 	})
 
-	// const CONTRACT_ADDRESS = useRef("");
-	// const ABI = useRef("");
-
-	// const checkContract = async (e) => {
-	// 	try {
-	// 		e.preventDefault();
-
-	// 		let contract_address = CONTRACT_ADDRESS.current.value;
-	// 		let abi = ABI.current.value;
-	// 		abi = JSON.parse(abi);
-	// 		// console.log(contract_address)
-	// 		// console.log(abi)
-	// 		const provider = new ethers.providers.Web3Provider(ethereum)
-    //         const signer = provider.getSigner()
-	// 		const contract = new ethers.Contract(contract_address, abi, signer);
-	// 		console.log(contract);
-	// 		console.log(contract.address);
-    //         let balance = await contract.balanceOf(account);
-    //         console.log(ethers.BigNumber.from(balance));
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 	}
-	// };
-
-	// const renderContainer = () => (
-	// 	<div className={styles.renderContainer}>
-	// 		<p>Connected Wallet: {account}</p>
-	// 		<form onSubmit={(e) => checkContract(e)}>
-	// 			<div>
-	// 				<label htmlFor="address">CONTRACT_ADDRESS: </label>
-	// 				<input ref={CONTRACT_ADDRESS} type="text" id="address" />
-	// 			</div>
-	// 			<div
-	// 				style={{ margin: "12px 0px", display: "flex", alignItems: "center" }}
-	// 			>
-	// 				<label htmlFor="abi">ABI:</label>
-	// 				<textarea ref={ABI} id="abi" />
-	// 			</div>
-	// 			<button className={styles.button} type="submit">
-	// 				Get contract
-	// 			</button>
-	// 		</form>
-	// 	</div>
-	// );
+	const [{ data: balanceData, error: balanceError, loading: balanceLoading }, getBalance] = useBalance({
+		addressOrName: accountData?.address,
+	})
 
 	return (
 		<div>
@@ -90,11 +49,12 @@ export default function Home() {
 
 				{accountData && (
 					<div className="flex flex-col justify-center items-center">
-						<div className="mt-2">
+						<div className="mt-2 flex flex-col">
 							<p>Connected Account:  
 								{accountData.ens?.name
 							? `${accountData.ens?.name} (${accountData.address})`
 							: accountData.address}</p>
+							<p>Balance: {balanceLoading && 'Loading...'} {balanceData?.formatted} {balanceData?.symbol}</p>
 						</div>
 						<button 
 							className="my-2 px-2 py-1 border rounded-xl bg-black text-white hover:bg-white hover:text-black"
