@@ -1,5 +1,6 @@
-Boilerplate code for Nextjs project with ethersjs, wagmi
+Boilerplate code for Nextjs project with ethersjs, wagmi.
 
+Wired up wagmi library to:
 - connect wallet
 - check if wallet is already connected
 - check account balance
