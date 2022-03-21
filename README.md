@@ -6,3 +6,4 @@ Wired up wagmi library to:
 - check account balance
 - disconnect wallet
 - interact with smart contract
+- added tailwind for styling
