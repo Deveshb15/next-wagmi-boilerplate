@@ -1,6 +1,6 @@
 {
   "name": "next-wagmi-boilerplate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Boilerplate code to setup nextjs with wagmi and tailwindcss",
   "private": false,
   "author": "Deveshb15",
