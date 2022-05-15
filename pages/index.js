@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import Head from "next/head";
-import { useAccount, useBalance,useConnect } from 'wagmi'
+import { useAccount, useBalance,useConnect, useSignMessage, useDisconnect } from 'wagmi'
+import { verifyMessage } from 'ethers/lib/utils'
 
 
 export const useIsMounted = () => {
@@ -11,14 +12,38 @@ export const useIsMounted = () => {
 
 export default function Home() {
 	const isMounted = useIsMounted()
-	const [{ data: connectData, error: connectError }, connect] = useConnect()
-	const [{ data: accountData }, disconnect] = useAccount({
-		fetchEns: true,
+	const {
+		activeConnector,
+		connect,
+		connectors,
+		error: connectError,
+		isConnecting,
+		pendingConnector,
+	} = useConnect()
+	const { data: accountData, isError, isLoading: accountLoad } = useAccount()
+	
+	const recoveredAddress = useRef('')
+	const { data: signData, error: signError, isLoading: signLoading, signMessage } = useSignMessage({
+		onSuccess(data, variables) {
+		  // Verify signature when sign message succeeds
+			const address = verifyMessage(variables.message, data)
+			recoveredAddress.current = address
+		},
 	})
 
-	const [{ data: balanceData, error: balanceError, loading: balanceLoading }, getBalance] = useBalance({
+	const { data: balanceData, isError: balanceError, isLoading: balanceLoading }  = useBalance({
 		addressOrName: accountData?.address,
 	})
+
+	const { disconnect } = useDisconnect()
+
+	// console.log(signData)
+	// console.log(recoveredAddress, " -> ", accountData?.address.toLowerCase() == recoveredAddress.current.toLowerCase())
+
+	const submitSign = (e) => {
+		e.preventDefault()
+		signMessage({ message: 'gm frens' })
+	}
 
 	return (
 		<div>
@@ -33,21 +58,31 @@ export default function Home() {
 				
 				{
 					(isMounted && !accountData) && (
-						connectData.connectors.map((connector) => (
-							<button
-								className="my-2 px-2 py-1 border rounded-xl bg-black text-white hover:bg-white hover:text-black"
-								disabled={!connector.ready}
-								key={connector.id}
-								onClick={() => connect(connector)}
-							>
-								{connector.name}
-								{!connector.ready && ' (unsupported)'}
+						connectors.map((x) => (
+							<button disabled={!x.ready} key={x.id} onClick={() => connect(x)}>
+								{x.name}
+								{isConnecting && pendingConnector?.id === x.id && ' (connecting)'}
 							</button>
 						))
 					)
 				}
 
-				{accountData && (
+				{
+					(accountData) && (
+						<div>
+							<button onClick={(e) => submitSign(e)}>
+								Sign message
+							</button>
+							{/* <button disabled={signLoad} onClick={() => signMessage()}>
+								Sign message
+							</button> */}
+							{/* {signSuccess && <div>Signature: {signData}</div>}
+							{signError && <div>Error signing message</div>} */}
+						</div>
+					)
+				}
+
+				{(accountData && accountData?.address.toLowerCase() == recoveredAddress.current.toLowerCase()) && (
 					<div className="flex flex-col justify-center items-center">
 						<div className="mt-2 flex flex-col">
 							<p>Connected Account:  

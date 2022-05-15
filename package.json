@@ -1,7 +1,23 @@
 {
-  "name": "contract-boilerplate",
+  "name": "next-wagmi-boilerplate",
   "version": "0.1.0",
-  "private": true,
+  "description": "Boilerplate code to setup nextjs with wagmi and tailwindcss",
+  "private": false,
+  "author": "Deveshb15",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Deveshb15/next-wagmi-boilerplate/issues"
+  },
+  "homepage": "https://github.com/Deveshb15/next-wagmi-boilerplate#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Deveshb15/next-wagmi-boilerplate.git"
+  },
+  "keywords": [
+    "Nextjs",
+    "wagmi",
+    "boilerplate"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,7 +29,7 @@
     "next": "12.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "wagmi": "^0.2.21"
+    "wagmi": "^0.3.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.4",
