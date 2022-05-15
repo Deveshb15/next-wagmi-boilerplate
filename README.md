@@ -1,3 +1,5 @@
+## ⚔️ npx next-wagmi-boilerplate my-app
+
 Boilerplate code for Nextjs project with ethersjs, wagmi.
 
 Wired up wagmi library to:
